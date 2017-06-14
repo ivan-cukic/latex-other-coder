@@ -57,11 +57,11 @@ function othercoder_stop_recording()
         -- current_line = current_line:gsub("[a-zA-Z][a-zA-Z]+::", "▮othercoderUnimportant◀%1▶")
 
         -- Adding the notation number to the current line
-        current_line = current_line:gsub("// <([0-9])>$",
+        current_line = current_line:gsub("// <([0-9])>",
                                          "▮othercoderCircled◀%1▶")
 
         -- Adding the notation number with the bar for connecting multiple-lines
-        current_line = current_line:gsub("// | <([0-9])>$",
+        current_line = current_line:gsub("// | <([0-9])>",
                                          "▮othercoderBarred◀%1▶ ▮othercoderCircled◀%1▶")
 
         -- Checking whether we have a text to put after the bar
