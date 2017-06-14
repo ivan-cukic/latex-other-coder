@@ -1,70 +1,83 @@
 #! /usr/bin/env lua
 --
--- diverb.lua
+-- othercoder.lua
 -- Copyright (C) 2017 Ivan Čukić <ivan.cukic(at)kde.org>
 --
 -- Distributed under terms of the MIT license.
 --
 
-local end_verb = '%s*\\end{diverb}'
-diverb_buffer = {}
-diverb_buffer[0] = "Test"
+local end_verb = '%s*\\end{othercoder}'
+othercoder_buffer = {}
+othercoder_buffer[0] = "Test"
 
-function diverb_read_buffer(buffer)
+function othercoder_read_buffer(buffer)
     if buffer:match(end_verb) then
         return buffer
     end
-    table.insert(diverb_buffer, buffer)
-    -- tex.print("\\begin{verbatim}" .. diverb_buffer .. "\\end{verbatim}")
+    table.insert(othercoder_buffer, buffer)
+    -- tex.print("\\begin{verbatim}" .. othercoder_buffer .. "\\end{verbatim}")
     return ""
 end
 
-function start_recording()
-    diverb_buffer = {}
+function othercoder_start_recording()
+    othercoder_buffer = {}
 
     luatexbase.add_to_callback(
         'process_input_buffer',
-        diverb_read_buffer,
-        'diverb_read_buffer')
+        othercoder_read_buffer,
+        'othercoder_read_buffer')
 end
 
-function stop_recording()
+function othercoder_stop_recording()
     luatexbase.remove_from_callback(
         'process_input_buffer',
-        'diverb_read_buffer')
+        'othercoder_read_buffer')
 
     markup_bold_pattern = "^//[ ^]*$"
-    gobble_match = "^// *|$"
+
+    gobble_match = "^// *|"
+    unimportant_match = "^// *~"
+    important_match = "^// *!"
 
     -- tex.print("\\begin{verbatim}\r\n")
 
-    line_co = table.count(diverb_buffer)
+    line_co = table.count(othercoder_buffer)
 
     output = ""
     gobble = 0
     unimportant = false
 
     for i = 1, line_co do
-        current_line = diverb_buffer[i]
-        current_line = current_line:gsub(":::", "▮codeUnimportant◀⋯▶")
+        current_line = othercoder_buffer[i]
+        current_line = current_line:gsub(":::", "▮othercoderUnimportant◀⋯▶")
 
         current_line = current_line:gsub(
                 "// <([0-9])>$",
-                "▮circled◀%1▶"
+                "▮othercoderCircled◀%1▶"
+            )
+
+        current_line = current_line:gsub(
+                "// | <([0-9])>$",
+                "▮othercoderBarred◀%1▶ ▮othercoderCircled◀%1▶"
+            )
+
+        current_line = current_line:gsub(
+                "// |(.*)",
+                "▮othercoderBarred◀▶ ▮sffamily◀%1▶"
             )
 
         -- is this the gobble definition?
         if i == 1 and current_line:match(gobble_match) then
             gobble = current_line:find("|")
 
-        elseif current_line:match("^//") then
+        elseif current_line:match("^//.*") then
             if current_line:match(markup_bold_pattern) then
                 -- nothing
 
-            elseif current_line == "//~" then
+            elseif current_line:match(unimportant_match) then
                 unimportant = true
 
-            elseif current_line == "//!" then
+            elseif current_line:match(important_match) then
                 unimportant = false
 
             end
@@ -72,8 +85,11 @@ function stop_recording()
         else
             if unimportant then
                 -- This needs to be grayed-out
+                -- output = output .. current_line .. "\r\n"
+                current_line = current_line:gsub(
+                        "(%s*)(.*)",
+                        "%1▮othercoderUnimportant◀%2▶")
                 output = output .. current_line .. "\r\n"
-                -- output = output .. "▮codeUnimportant◀ Hello " .. current_line .. "▶" .. "\r\n"
                 -- print(output)
 
             elseif i == line_co then
@@ -82,7 +98,7 @@ function stop_recording()
 
             else
                 -- Not the last line
-                current_markup = diverb_buffer[i + 1]
+                current_markup = othercoder_buffer[i + 1]
 
                 if current_markup:match(markup_bold_pattern) then
                     -- We have the markup
@@ -95,7 +111,7 @@ function stop_recording()
 
                         if not is_bold and m == "^" then
                             -- we are using Palochka for command start
-                            output = output .. "▮codeHighlight◀" -- going bold
+                            output = output .. "▮othercoderImportant◀" -- going bold
                             is_bold = true
 
                         elseif is_bold and not (m == "^") then
@@ -123,11 +139,23 @@ function stop_recording()
         end
     end
 
+    -- print(
+    --         "\\begin{Verbatim}"
+    --         .. "[ commandchars=▮◀▶ "
+    --         .. string.format(", gobble=%d ", gobble)
+    --         -- .. ", mathescape=true "
+    --         .. ", codes={\\catcode`$=3} "
+    --         .. "]\r\n"
+    --         .. output
+    --         .. "\\end{Verbatim}\r\n"
+    --     )
+
     tex.print(
             "\\begin{Verbatim}"
             .. "[ commandchars=▮◀▶ "
             .. string.format(", gobble=%d ", gobble)
-            .. ", mathescape=true "
+            -- .. ", mathescape=true "
+            .. ", codes={\\catcode`$=3} "
             .. "]\r\n"
             .. output
             .. "\\end{Verbatim}\r\n"

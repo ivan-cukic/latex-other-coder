@@ -1,0 +1,59 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{othercoder}[2017/07/01 Other Coder package]
+
+\RequirePackage{fvextra}
+\RequirePackage{luacode}
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+
+
+% Defining the colours we will be using in the package
+\definecolor{othercoderImportant}{rgb}{0.1,0.3,0.3}
+\definecolor{othercoderUnimportant}{gray}{0.4}
+\definecolor{othercoderBar}{gray}{0.7}
+
+% We have some fancy tikz-based commands
+\newcommand*\othercoderCircled[1]{\tikz[baseline=(char.base)]{
+    \node [ shape=circle
+          , fill=othercoderImportant
+          , draw=othercoderImportant
+          , inner sep=1pt
+          ] (char) {\textcolor{white}{\texttt{#1}}};
+    }}
+
+\newcommand*\othercoderBarred[1]{\tikz[overlay]{
+    \node (rect)
+        [ fill=othercoderBar
+        , draw=othercoderBar
+        , inner sep=1pt
+        , minimum height=\baselineskip
+        , minimum width=3pt
+        , shift={(0pt, 4pt)}
+        ] {};
+    }}
+
+\newcommand\othercoderImportant[1]{\textbf{\textcolor{othercoderImportant}{#1}}}
+\newcommand\othercoderUnimportant[1]{\textcolor{othercoderUnimportant}{#1}}
+
+\directlua{dofile("othercoder.lua")}
+
+\newenvironment{othercoder}{%
+    \directlua{othercoder_start_recording()}}{%
+    \directlua{othercoder_stop_recording()}%
+}
+
+% The user might want to use \circled and friends
+\DeclareOption{withcommands}{
+    \newcommand{\circled}{\othercoderCircled}
+    \newcommand{\barred}{\othercoderBarred}
+    \newcommand{\important}{\othercoderImportant}
+    \newcommand{\unimportant}{\othercoderUnimportant}
+}
+
+\setmonofont{Hack}[Scale=MatchLowercase]
+
+% \ExecuteOptions{withcommands}
+
+\ProcessOptions\relax
+
+\endinput

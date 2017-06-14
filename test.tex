@@ -1,0 +1,62 @@
+\documentclass{article}
+
+\usepackage
+    { fontspec
+    , othercoder
+    }
+
+\begin{document}
+
+This
+
+\begin{othercoder}
+//  |-----------------------------------------------------|
+//  ~
+    auto pipeline =
+        service(event_loop)
+            | transform(trim)
+
+//  !
+            | filter([] (const std::string &message) {            // | <1>
+                return message.length() > 0 && message[0] != '#'; // |
+            })                                                    // |
+
+            | transform([] (const std::string &message) {  // | This transform
+//            ^^^^^^^^^
+                return mtry([&] {                          // | uses ▮texttt◀▮othercoderImportant◀mtry▶▶
+//                     ^^^^
+                    return json::parse(message);           // | which is really cool
+                });                                        // | because we are nesting
+            })                                             // | monads
+//  ~
+
+            | transform([] (const auto& exp) {
+                return mbind(exp, bookmark_from_json);
+            })
+
+            | sink([] (const auto &message) {
+                const auto exp_bookmark = message.value;
+
+                if (!exp_bookmark) {
+                    message.reply("ERROR: Request not understood\n");
+                    return;
+                }
+
+                if (exp_bookmark->text.find("C++") != std::string::npos) {
+                    message.reply("OK: " + to_string(exp_bookmark.get()) + "\n");
+                } else {
+                    message.reply("ERROR: Not a C++-related link\n");
+                }
+            });
+\end{othercoder}
+
+Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+Lorem \othercoderCircled{1} ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
+
+
+\end{document}
