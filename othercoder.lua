@@ -15,32 +15,32 @@ function othercoder_read_buffer(buffer)
         return buffer
     end
     table.insert(othercoder_buffer, buffer)
-    -- tex.print("\\begin{verbatim}" .. othercoder_buffer .. "\\end{verbatim}")
     return ""
 end
 
 function othercoder_start_recording()
     othercoder_buffer = {}
 
-    luatexbase.add_to_callback(
-        'process_input_buffer',
-        othercoder_read_buffer,
-        'othercoder_read_buffer')
+    luatexbase.add_to_callback('process_input_buffer',
+                               othercoder_read_buffer,
+                               'othercoder_read_buffer')
 end
 
 function othercoder_stop_recording()
-    luatexbase.remove_from_callback(
-        'process_input_buffer',
-        'othercoder_read_buffer')
+    luatexbase.remove_from_callback('process_input_buffer',
+                                    'othercoder_read_buffer')
 
-    markup_bold_pattern = "^//[ ^]*$"
+    -- Pattern to recognize where the previous line should be bold
+    markup_bold_pattern = "^//>[ ^]*$"
 
-    gobble_match = "^// *|"
-    unimportant_match = "^// *~"
-    important_match = "^// *!"
+    -- Pattern for the visual hint of how much to gobble
+    gobble_match = "^//> *|"
 
-    -- tex.print("\\begin{verbatim}\r\n")
+    -- Patterns for switchgin between important and unimportant lines
+    unimportant_match = "^//> *~"
+    important_match = "^//> *!"
 
+    -- Processing lines
     line_co = table.count(othercoder_buffer)
 
     output = ""
@@ -49,21 +49,38 @@ function othercoder_stop_recording()
 
     for i = 1, line_co do
         current_line = othercoder_buffer[i]
+
+        -- Replace ::: with ellipsis
         current_line = current_line:gsub(":::", "▮othercoderUnimportant◀⋯▶")
 
-        current_line = current_line:gsub(
-                "// <([0-9])>$",
-                "▮othercoderCircled◀%1▶"
-            )
+        -- Unhighlight namespaces
+        -- current_line = current_line:gsub("[a-zA-Z][a-zA-Z]+::", "▮othercoderUnimportant◀%1▶")
+
+        -- Adding the notation number to the current line
+        current_line = current_line:gsub("// <([0-9])>$",
+                                         "▮othercoderCircled◀%1▶")
+
+        -- Adding the notation number with the bar for connecting multiple-lines
+        current_line = current_line:gsub("// | <([0-9])>$",
+                                         "▮othercoderBarred◀%1▶ ▮othercoderCircled◀%1▶")
+
+        -- Checking whether we have a text to put after the bar
+        current_comment_text = ""
 
         current_line = current_line:gsub(
-                "// | <([0-9])>$",
-                "▮othercoderBarred◀%1▶ ▮othercoderCircled◀%1▶"
+                "// |(.*)",
+                function(s) current_comment_text = s:gsub("^%s*(.-)%s*$", "%1") end
+            )
+
+        -- Backticks are used to denote texttt
+        current_comment_text = current_comment_text:gsub(
+                "`([^`]*)`",
+                "▮texttt◀%1▶"
             )
 
         current_line = current_line:gsub(
                 "// |(.*)",
-                "▮othercoderBarred◀▶ ▮sffamily◀%1▶"
+                "▮othercoderBarred◀▶ ▮sffamily◀ " .. current_comment_text .. "▶"
             )
 
         -- is this the gobble definition?
@@ -85,12 +102,9 @@ function othercoder_stop_recording()
         else
             if unimportant then
                 -- This needs to be grayed-out
-                -- output = output .. current_line .. "\r\n"
-                current_line = current_line:gsub(
-                        "(%s*)(.*)",
-                        "%1▮othercoderUnimportant◀%2▶")
+                current_line = current_line:gsub("(%s*)(.*)",
+                                                 "%1▮othercoderUnimportant◀%2▶")
                 output = output .. current_line .. "\r\n"
-                -- print(output)
 
             elseif i == line_co then
                 -- The last line
@@ -154,7 +168,6 @@ function othercoder_stop_recording()
             "\\begin{Verbatim}"
             .. "[ commandchars=▮◀▶ "
             .. string.format(", gobble=%d ", gobble)
-            -- .. ", mathescape=true "
             .. ", codes={\\catcode`$=3} "
             .. "]\r\n"
             .. output

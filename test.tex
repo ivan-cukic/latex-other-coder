@@ -2,61 +2,51 @@
 
 \usepackage
     { fontspec
-    , othercoder
     }
+
+\usepackage{othercoder}[withcommands]
 
 \begin{document}
 
-This
-
 \begin{othercoder}
-//  |-----------------------------------------------------|
-//  ~
-    auto pipeline =
-        service(event_loop)
-            | transform(trim)
+//> |
+//> ~
+    #include <vector>
+    #include <algorithm>
 
-//  !
-            | filter([] (const std::string &message) {            // | <1>
-                return message.length() > 0 && message[0] != '#'; // |
-            })                                                    // |
+//> !
+    class value_gte {
+    public:
+        value_gte(int comp)  // | An inline comment that spans multiple lines
+            : m_comp(comp)   // | and explains the `value_gte` constructor
+        {
+        }
 
-            | transform([] (const std::string &message) {  // | This transform
-//            ^^^^^^^^^
-                return mtry([&] {                          // | uses ▮texttt◀▮othercoderImportant◀mtry▶▶
-//                     ^^^^
-                    return json::parse(message);           // | which is really cool
-                });                                        // | because we are nesting
-            })                                             // | monads
-//  ~
+        template <typename ValType>                         // | <1>
+//>           ^^^^^^^^^^^^^^^^                              // |
+        bool operator() (ValType &&value) const {           // |
+            return std::forward<ValType>(value) >= m_comp;  // |
+//>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        }                                                   // |
 
-            | transform([] (const auto& exp) {
-                return mbind(exp, bookmark_from_json);
-            })
+    private:
+        int m_comp; // <2>
+    };
 
-            | sink([] (const auto &message) {
-                const auto exp_bookmark = message.value;
-
-                if (!exp_bookmark) {
-                    message.reply("ERROR: Request not understood\n");
-                    return;
-                }
-
-                if (exp_bookmark->text.find("C++") != std::string::npos) {
-                    message.reply("OK: " + to_string(exp_bookmark.get()) + "\n");
-                } else {
-                    message.reply("ERROR: Not a C++-related link\n");
-                }
-            });
+//> ~
+    // The less important part of the example
+    int main(int argc, char *argv[])
+    {
+        value_gte gte42(42);
+        std::vector<float> xs { 1, 2, 4, 8, 16, 32, 64, 128, 256 };
+        std::cout << std::count_if(std::cbegin(xs), std::cend(xs), gte42)
+                  << std::endl;
+    }
 \end{othercoder}
 
-Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-Lorem \othercoderCircled{1} ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-Lorem ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet ipsum dolor sit amet.
-
+Some in-text explanation of \othercoderCircled{1},
+which marks a block in the above listing,
+and a specific line \othercoderCircled{2}
+which is just a line and nothing more.
 
 \end{document}
