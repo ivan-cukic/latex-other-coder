@@ -1,8 +1,7 @@
 Other Coder
 ===========
 
-Screenshot goes here.
-
+![Demo](https://github.com/ivan-cukic/latex-other-coder/raw/master/images/othercoder.png)
 
 Yet another Verbatim environment?
 ---------------------------------
@@ -21,6 +20,7 @@ The LaTeX packages I've seen so far
 do not provide an intuitive way to do this,
 and that is the reason
 behind the creation of this package.
+
 
 Syntax
 ------
