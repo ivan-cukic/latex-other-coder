@@ -12,7 +12,7 @@ for code listings that do not need to have syntax highlighting.
 Namely,
 in shorter code examples,
 syntax highlighting does not bring that much useful information.
-It is more important to being able to highlight
+It is more important to be able to highlight
 specific parts of the code
 so that the reader can focus on them.
 
@@ -25,8 +25,8 @@ behind the creation of this package.
 Syntax
 ------
 
-The main idea behind this package
-is to allow *visual* notations in the code
+The main idea
+is to allow *visual* annotations in the code
 and to convert them to a nice representation for printing.
 I don't like having to say "highlight lines from 8-12".
 It is error prone,
@@ -43,10 +43,10 @@ Project status
 
 The implementation is a bit dirty --
 I had to quickly whip up something
-and I did not want to learn Lua properly beforehand.
+and I did not want to learn Lua properly (or at all) beforehand.
 
 It does work,
-but there is much room for improvement
+but there is room for improvement
 and all patches are welcome.
 
 
