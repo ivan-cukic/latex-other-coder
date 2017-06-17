@@ -40,6 +40,16 @@ function othercoder_stop_recording()
 
     require "dist/othercoder_impl.lua"
 
+    -- print(
+    --         "\\begin{Verbatim}"
+    --         .. "[ commandchars=▮◀▶ "
+    --         .. string.format(", gobble=%d ", d.gobble)
+    --         .. ", codes={\\catcode`$=3} "
+    --         .. "]\r\n"
+    --         .. d.process_input(othercoder_buffer)
+    --         .. "\\end{Verbatim}\r\n"
+    --     )
+
     tex.print(
             "\\begin{Verbatim}"
             .. "[ commandchars=▮◀▶ "

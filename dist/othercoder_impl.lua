@@ -144,7 +144,6 @@ d = {
       table.insert(file_lines, line)
     end
     local result = d.process_input(file_lines)
-    moon.p(result)
     return result
   end
 }

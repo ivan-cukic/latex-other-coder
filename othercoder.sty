@@ -35,7 +35,7 @@
 \newcommand\othercoderImportant[1]{\textbf{\textcolor{othercoderImportant}{#1}}}
 \newcommand\othercoderUnimportant[1]{\textcolor{othercoderUnimportant}{#1}}
 
-\directlua{dofile("othercoder.lua")}
+\directlua{require("othercoder")}
 
 \newenvironment{othercoder}{%
     \directlua{othercoder_start_recording()}}{%

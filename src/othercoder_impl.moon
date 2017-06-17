@@ -214,7 +214,6 @@ export d = {
             table.insert file_lines, line
 
         result = d.process_input file_lines
-        moon.p result
         return result
 }
 
