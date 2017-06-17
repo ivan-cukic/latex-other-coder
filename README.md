@@ -41,13 +41,20 @@ See the example file.
 Project status
 --------------
 
-The implementation is a bit dirty --
-I had to quickly whip up something
-and I did not want to learn Lua properly (or at all) beforehand.
+The implementation is a bit dirty, but it works.
+I do not plan to introduce any breaking changes regarding
+the markup syntax.
 
-It does work,
-but there is room for improvement
-and all patches are welcome.
+
+Why MoonScript?
+---------------
+
+I'm not particularly astonished by Lua
+so I decided to try a language that compiles to it.
+The first stable language that compiles to Lua I encountered was MoonScript,
+so I went with it.
+
+It is nothing special, but it is nicer than Lua.
 
 
 Will it support something beside LuaLaTex
@@ -67,5 +74,5 @@ License
 -------
 
 The code is published under the
-GNU Lesser General Public License.
+[GNU Lesser General Public License version 3](https://www.gnu.org/licenses/lgpl-3.0.en.html) or later.
 
