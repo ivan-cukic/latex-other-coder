@@ -151,9 +151,16 @@ end
 -- package options                                                          --
 ------------------------------------------------------------------------------
 
+
 function othercoder_enable_auto_font_size()
     require "dist/othercoder_impl.lua"
     d.auto_font_size = true
+end
+
+
+function othercoder_enable_beamer()
+    require "dist/othercoder_impl.lua"
+    d.enable_beamer = true
 end
 
 

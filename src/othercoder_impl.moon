@@ -67,6 +67,7 @@ export d = {
     state: normal_state
     gobble: 0
     max_line_length: 0
+    enable_beamer: false
     enable_debug: false
     enable_debug_full: false
 
@@ -151,9 +152,22 @@ export d = {
         current_comment_text = current_comment_text\gsub "`([^`]*)`",
                                                          d.latex("texttt", "%1")
 
-        -- Circled numbers in the barred comment
-        current_comment_text = current_comment_text\gsub "<([0-9])>",
-                                                         d.latex("othercoderCircled", "%1")
+        if d.enable_beamer then
+            -- Circled numbers in the barred comment will render as
+            -- numbers only if not followed by text
+            current_comment_text = current_comment_text\gsub "<([0-9])>$",
+                                                             d.latex("othercoderCircled", "%1")
+
+            -- Circled numbers in the barred comment get converted to
+            -- Beamer's \only commands
+            current_comment_text = current_comment_text\gsub "<([0-9])> (.*)$",
+                                                             d.latex("othercoderOnlyOn", "%1") .. config.latex_open_char .. "%2" .. config.latex_close_char
+
+        else
+            -- Circled numbers in the barred comments
+            current_comment_text = current_comment_text\gsub "<([0-9])>",
+                                                             d.latex("othercoderCircled", "%1")
+
 
         -- Replacing the barred comment markup with LaTeX commands
         current_line = current_line\gsub "// |(.*)",

@@ -45,6 +45,7 @@ d = {
   state = normal_state,
   gobble = 0,
   max_line_length = 0,
+  enable_beamer = false,
   enable_debug = false,
   enable_debug_full = false,
   bold_pattern = "^" .. config.prefix .. "[ " .. config.bold_marker .. "]*$",
@@ -100,7 +101,12 @@ d = {
       current_comment_text = utils.trim(s)
     end)
     current_comment_text = current_comment_text:gsub("`([^`]*)`", d.latex("texttt", "%1"))
-    current_comment_text = current_comment_text:gsub("<([0-9])>", d.latex("othercoderCircled", "%1"))
+    if d.enable_beamer then
+      current_comment_text = current_comment_text:gsub("<([0-9])>$", d.latex("othercoderCircled", "%1"))
+      current_comment_text = current_comment_text:gsub("<([0-9])> (.*)$", d.latex("othercoderOnlyOn", "%1") .. config.latex_open_char .. "%2" .. config.latex_close_char)
+    else
+      current_comment_text = current_comment_text:gsub("<([0-9])>", d.latex("othercoderCircled", "%1"))
+    end
     current_line = current_line:gsub("// |(.*)", d.latex("othercoderBarred", "") .. " " .. d.latex("sffamily", " " .. current_comment_text))
     local output = ""
     if d.state == d.unimportant_state then
