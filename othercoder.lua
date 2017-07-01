@@ -120,7 +120,7 @@ function othercoderboxed_stop_recording()
 
     if d.enable_debug_full then
         texio.write_nl(
-                "\\begin{tcolorbox}[size=tight,oversize,sharp corners,colback=shadecolor,colframe=shadecolor,left=56pt,right=90pt]"
+                "\\begin{tcolorbox}[size=tight,oversize,sharp corners,colback=othercoderBox,colframe=othercoderBox,left=56pt,right=90pt]"
                 .. "[[[\\begin{Verbatim}"
                 .. "[ commandchars=▮◀▶ "
                 .. string.format(", gobble=%d ", result.gobble)
@@ -134,7 +134,7 @@ function othercoderboxed_stop_recording()
 
     tex.print(
             result.font_size
-            .. "\\begin{tcolorbox}[size=tight,oversize,sharp corners,colback=shadecolor,colframe=shadecolor,left=56pt,right=90pt,top=0.3em,bottom=0.3em]"
+            .. "\\begin{tcolorbox}[size=tight,oversize,sharp corners,colback=othercoderBox,colframe=othercoderBox,left=56pt,right=90pt,top=0.3em,bottom=0.3em]"
             .. "\\begin{Verbatim}"
             .. "[ commandchars=▮◀▶ "
             .. string.format(", gobble=%d ", result.gobble)
