@@ -45,9 +45,16 @@ d = {
   state = normal_state,
   gobble = 0,
   max_line_length = 0,
+  enable_debug = false,
+  enable_debug_full = false,
   bold_pattern = "^" .. config.prefix .. "[ " .. config.bold_marker .. "]*$",
   latex = function(command, body)
     return config.latex_start_char .. command .. config.latex_open_char .. body .. config.latex_close_char
+  end,
+  debug = function(message)
+    if d.enable_debug then
+      return texio.write_nl("othercoder: " .. message)
+    end
   end,
   process_first_line = function(current_line)
     d.gobble = current_line:find("|")
@@ -56,8 +63,8 @@ d = {
     else
       d.gobble = d.gobble - 1
     end
-    texio.write_nl("Detected gobble while processing the first line: " .. d.gobble)
-    texio.write_nl(" -> " .. current_line)
+    d.debug("Detected gobble while processing the first line: " .. d.gobble)
+    d.debug(" -> " .. current_line)
     return ""
   end,
   process_markup_line = function(current_line)

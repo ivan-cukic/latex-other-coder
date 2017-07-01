@@ -55,6 +55,16 @@
     \directlua{othercoder_enable_auto_font_size()}
 }
 
+% Enables the debugging output
+\DeclareOption{debug}{
+    \directlua{othercoder_enable_debug()}
+}
+
+% Enables the debugging output, including the generated latex code
+\DeclareOption{debugfull}{
+    \directlua{othercoder_enable_debug_full()}
+}
+
 % \ExecuteOptions{withcommands}
 
 \ProcessOptions\relax

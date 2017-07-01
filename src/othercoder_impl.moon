@@ -61,16 +61,23 @@ export d = {
     normal_state: 0
     important_state: 1
     unimportant_state: 2
+
     auto_font_size: false
 
     state: normal_state
     gobble: 0
     max_line_length: 0
+    enable_debug: false
+    enable_debug_full: false
 
     bold_pattern: "^" .. config.prefix .. "[ " .. config.bold_marker .. "]*$"
 
     latex: (command, body) ->
         return config.latex_start_char .. command .. config.latex_open_char .. body .. config.latex_close_char
+
+    debug: (message) ->
+        if d.enable_debug
+            texio.write_nl("othercoder: " .. message)
 
     process_first_line: (current_line) ->
         -- Do we have gobble bar?
@@ -80,8 +87,8 @@ export d = {
         else
             d.gobble -= 1
 
-        texio.write_nl("Detected gobble while processing the first line: " .. d.gobble)
-        texio.write_nl(" -> " .. current_line)
+        d.debug("Detected gobble while processing the first line: " .. d.gobble)
+        d.debug(" -> " .. current_line)
 
         -- TODO: Something else?
         return ""
