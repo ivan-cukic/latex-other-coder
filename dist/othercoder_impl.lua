@@ -41,8 +41,10 @@ d = {
   normal_state = 0,
   important_state = 1,
   unimportant_state = 2,
+  auto_font_size = false,
   state = normal_state,
   gobble = 0,
+  max_line_length = 0,
   bold_pattern = "^" .. config.prefix .. "[ " .. config.bold_marker .. "]*$",
   latex = function(command, body)
     return config.latex_start_char .. command .. config.latex_open_char .. body .. config.latex_close_char
@@ -51,7 +53,11 @@ d = {
     d.gobble = current_line:find("|")
     if d.gobble == nil then
       d.gobble = 0
+    else
+      d.gobble = d.gobble - 1
     end
+    texio.write_nl("Detected gobble while processing the first line: " .. d.gobble)
+    texio.write_nl(" -> " .. current_line)
     return ""
   end,
   process_markup_line = function(current_line)
@@ -65,6 +71,9 @@ d = {
     return ""
   end,
   process_normal_line = function(current_line, next_line)
+    if d.max_line_length < string.len(current_line) then
+      d.max_line_length = string.len(current_line)
+    end
     local current_line_state = d.state
     local current_line_markup_text = ""
     current_line = current_line:gsub(config.prefix .. "(.*)", function(s)
@@ -126,6 +135,9 @@ d = {
     end
   end,
   process_input = function(lines)
+    d.state = d.normal_state
+    d.gobble = 0
+    d.max_line_length = 0
     local result = ""
     for index, pair in ipairs(utils.consecutive_pairs(lines, "")) do
       local current_line = pair.first
@@ -136,7 +148,29 @@ d = {
         result = result .. d.process_line(pair.first, pair.second)
       end
     end
-    return result
+    local font_size = ""
+    if d.auto_font_size then
+      d.max_line_length = d.max_line_length - d.gobble
+      if d.max_line_length < 40 then
+        font_size = "\\large"
+      elseif d.max_line_length < 45 then
+        font_size = "\\normalsize"
+      elseif d.max_line_length < 55 then
+        font_size = "\\footnotesize"
+      elseif d.max_line_length < 60 then
+        font_size = "\\scriptsize"
+      elseif d.max_line_length < 70 then
+        font_size = "\\fontsize{8}{10}"
+      else
+        font_size = "\\tiny"
+      end
+    end
+    return {
+      text = result,
+      gobble = d.gobble,
+      max_line_length = d.max_line_length,
+      font_size = font_size
+    }
   end,
   process_file = function(file)
     local file_lines = { }

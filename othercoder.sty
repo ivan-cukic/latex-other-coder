@@ -26,9 +26,9 @@
         [ fill=othercoderBar
         , draw=othercoderBar
         , inner sep=1pt
-        , minimum height=\baselineskip
+        , minimum height=1.1\baselineskip
         , minimum width=3pt
-        , shift={(0pt, 4pt)}
+        , shift={(0pt, 2pt)}
         ] {};
     }}
 
@@ -50,10 +50,15 @@
     \newcommand{\unimportant}{\othercoderUnimportant}
 }
 
-\setmonofont{Hack}[Scale=MatchLowercase]
+% Set the font size depending on the maximum line length
+\DeclareOption{autofontsize}{
+    \directlua{othercoder_enable_auto_font_size()}
+}
 
 % \ExecuteOptions{withcommands}
 
 \ProcessOptions\relax
+
+\setmonofont{Hack}[Scale=MatchLowercase]
 
 \endinput

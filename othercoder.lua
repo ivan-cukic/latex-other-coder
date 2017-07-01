@@ -40,24 +40,40 @@ function othercoder_stop_recording()
 
     require "dist/othercoder_impl.lua"
 
-    -- print(
+    result = d.process_input(othercoder_buffer)
+
+    texio.write_nl("Detected gobble (result): " .. result.gobble .. " <-----")
+    texio.write_nl("Detected maximum line: " .. result.max_line_length .. " <-----")
+
+    -- texio.write_nl(
     --         "\\begin{Verbatim}"
     --         .. "[ commandchars=▮◀▶ "
-    --         .. string.format(", gobble=%d ", d.gobble)
+    --         .. string.format(", gobble=%d ", result.gobble)
     --         .. ", codes={\\catcode`$=3} "
     --         .. "]\r\n"
-    --         .. d.process_input(othercoder_buffer)
+    --         .. result.text
     --         .. "\\end{Verbatim}\r\n"
     --     )
 
     tex.print(
-            "\\begin{Verbatim}"
+            result.font_size
+            .. "\\begin{Verbatim}"
             .. "[ commandchars=▮◀▶ "
-            .. string.format(", gobble=%d ", d.gobble)
+            .. string.format(", gobble=%d ", result.gobble)
             .. ", codes={\\catcode`$=3} "
             .. "]\r\n"
-            .. d.process_input(othercoder_buffer)
+            .. result.text
             .. "\\end{Verbatim}\r\n"
         )
 end
+
+function othercoder_enable_auto_font_size()
+
+    require "dist/othercoder_impl.lua"
+
+    d.auto_font_size = true
+
+end
+
+
 

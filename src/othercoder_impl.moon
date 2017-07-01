@@ -61,9 +61,11 @@ export d = {
     normal_state: 0
     important_state: 1
     unimportant_state: 2
+    auto_font_size: false
 
     state: normal_state
     gobble: 0
+    max_line_length: 0
 
     bold_pattern: "^" .. config.prefix .. "[ " .. config.bold_marker .. "]*$"
 
@@ -73,7 +75,13 @@ export d = {
     process_first_line: (current_line) ->
         -- Do we have gobble bar?
         d.gobble = current_line\find "|"
-        if d.gobble == nil then d.gobble = 0
+        if d.gobble == nil then
+            d.gobble = 0
+        else
+            d.gobble -= 1
+
+        texio.write_nl("Detected gobble while processing the first line: " .. d.gobble)
+        texio.write_nl(" -> " .. current_line)
 
         -- TODO: Something else?
         return ""
@@ -95,6 +103,10 @@ export d = {
 
 
     process_normal_line: (current_line, next_line) ->
+
+        if d.max_line_length < string.len(current_line) then
+            d.max_line_length = string.len(current_line)
+
         -- Checking for in-line markup
         current_line_state = d.state
         current_line_markup_text = ""
@@ -195,7 +207,13 @@ export d = {
 
 
     process_input: (lines) ->
+        -- reset state
+        d.state           = d.normal_state
+        d.gobble          = 0
+        d.max_line_length = 0
+
         result = ""
+
         for index, pair in ipairs utils.consecutive_pairs lines, ""
             current_line = pair.first
             next_line    = pair.second
@@ -205,7 +223,30 @@ export d = {
             else
                 result ..= d.process_line pair.first, pair.second
 
-        return result
+        font_size = ""
+
+        if d.auto_font_size then
+            d.max_line_length -= d.gobble
+
+            if d.max_line_length < 40
+                font_size = "\\large"
+            elseif d.max_line_length < 45
+                font_size = "\\normalsize"
+            elseif d.max_line_length < 55
+                font_size = "\\footnotesize"
+            elseif d.max_line_length < 60
+                font_size = "\\scriptsize"
+            elseif d.max_line_length < 70
+                font_size = "\\fontsize{8}{10}"
+            else
+                font_size = "\\tiny"
+
+        return {
+                text: result
+                gobble: d.gobble
+                max_line_length: d.max_line_length
+                font_size: font_size
+            }
 
     process_file: (file) ->
         file_lines = {}
