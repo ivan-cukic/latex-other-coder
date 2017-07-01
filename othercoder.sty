@@ -42,6 +42,11 @@
     \directlua{othercoder_stop_recording()}%
 }
 
+\newenvironment{othercoderboxed}{%
+    \directlua{othercoderboxed_start_recording()}}{%
+    \directlua{othercoderboxed_stop_recording()}%
+}
+
 % The user might want to use \circled and friends
 \DeclareOption{withcommands}{
     \newcommand{\circled}{\othercoderCircled}

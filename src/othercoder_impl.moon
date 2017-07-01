@@ -197,7 +197,7 @@ export d = {
                 -- We do not have the markup
                 output ..= current_line
 
-        output ..= "\r\n"
+        output ..= "\r"
         return output
 
 

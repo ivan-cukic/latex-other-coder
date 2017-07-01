@@ -131,7 +131,7 @@ d = {
         output = output .. current_line
       end
     end
-    output = output .. "\r\n"
+    output = output .. "\r"
     return output
   end,
   process_line = function(current_line, next_line)
