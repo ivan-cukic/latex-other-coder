@@ -99,7 +99,7 @@ export d = {
         current_line_state = d.state
         current_line_markup_text = ""
         current_line = current_line\gsub config.prefix .. "(.*)",
-                                         (s) -> current_line_markup_text = utlis.trim s
+                                         (s) -> current_line_markup_text = utils.trim s
 
 
         if current_line_markup_text\match config.normal_marker then
